@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='Shift-JIS'?>
+
+<?define ProductVersion='1.1.0'?>
+<?define ProductHTML='http://fdlvling.blogspot.jp/'?>
+
+<?if $(var.PKGLOC)=japanese?>
+<?define PKGLOC_LANGUAGE=1041?>
+<?define PKGLOC_CODEPAGE=932?>
+<?define PKGLOC_LICENSE=license.rtf?>
+<?define PKGLOC_NOT64BIT=このインストーラは64ビット版のWindows用です。?>
+<?define PKGLOC_64BIT=64ビット版のWindowsにはインストールできません。?>
+<?define PKGLOC_NEWERFOUND=より新しいバージョンが既にインストールされています。?>
+<?define PKGLOC_PREVIOUSFOUND=このバージョンをインストールするには、古いバージョンを先にアンインストールしてください。?>
+<?endif?>
+
+<?if $(var.PKGLOC)=english?>
+<?define PKGLOC_LANGUAGE=1033?>
+<?define PKGLOC_CODEPAGE=437?>
+<?define PKGLOC_LICENSE=license_en.rtf?>
+<?define PKGLOC_NOT64BIT=You are attempting to run the 64-bit installer on a 32-bit version of Windows.?>
+<?define PKGLOC_64BIT=You are attempting to run the 32-bit installer on a 64-bit version of Windows.?>
+<?define PKGLOC_NEWERFOUND=A later version is already installed.?>
+<?define PKGLOC_PREVIOUSFOUND=To install this version, please uninstall the previous version first.?>
+<?endif?>
+
+<?if $(sys.BUILDARCH)=x64?>
+<?define PROGRAM_FILES_FOLDER=ProgramFiles64Folder?>
+<?else?>
+<?define PROGRAM_FILES_FOLDER=ProgramFilesFolder?>
+<?endif?>
+
+<?define ProductUpgradeCode='D7E51260-2063-4761-9933-416742467721'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi' xmlns:difx='http://schemas.microsoft.com/wix/DifxAppExtension'>
+	<Product Id='*' UpgradeCode='$(var.ProductUpgradeCode)' Name='Flash Drive Leveling' Version='$(var.ProductVersion)' Manufacturer='rtrdprgrmr' Language='$(var.PKGLOC_LANGUAGE)' Codepage='$(var.PKGLOC_CODEPAGE)'>
+		<Package InstallerVersion='200' Compressed='yes' Comments='Windows Installer Package' InstallScope='perMachine' InstallPrivileges='elevated'/>
+		<Media Id='1' Cabinet='product.cab' EmbedCab='yes'/>
+		<WixVariable Id='WixUILicenseRtf' Value='$(var.PKGLOC_LICENSE)'/>
+		<Icon Id='ProductIcon' SourceFile='app\fdlvling.ico'/>
+		<Property Id='ARPPRODUCTICON' Value='ProductIcon'/>
+		<Property Id='ARPHELPLINK' Value='$(var.ProductHTML)'/>
+		<Property Id='ARPURLINFOABOUT' Value='$(var.ProductHTML)'/>
+		<MajorUpgrade AllowSameVersionUpgrades='yes' DowngradeErrorMessage='$(var.PKGLOC_NEWERFOUND)'/>
+<?if $(sys.BUILDARCH)=x64?>
+		<Condition Message='$(var.PKGLOC_NOT64BIT)'>VersionNT64</Condition>
+<?else?>
+		<Condition Message='$(var.PKGLOC_64BIT)'>NOT VersionNT64</Condition>
+<?endif?>
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+			<Directory Id='$(var.PROGRAM_FILES_FOLDER)'>
+				<Directory Id='INSTALLDIR' Name='Flash Drive Leveling'>
+					<Component Id='DriverFiles' Guid='D7E51261-2063-4761-9933-416742467721'>
+<?if $(sys.BUILDARCH)=x64?>
+						<File Name='fdlvling.sys' Source='driver\x64\fdlvling.sys'/>
+						<File Name='fdlvling.cat' Source='driver\x64\fdlvling.cat'/>
+<?else?>
+						<File Name='fdlvling.sys' Source='driver\fdlvling.sys'/>
+						<File Name='fdlvling.cat' Source='driver\fdlvling.cat'/>
+<?endif?>
+						<File Name='fdlvling.inf' Source='driver\fdlvling.inf'/>
+						<difx:Driver ForceInstall='no' Sequence='0' Legacy='yes'/>
+					</Component>
+					<Component Id='ApplicationFiles' Guid='D7E51262-2063-4761-9933-416742467721'>
+<?if $(sys.BUILDARCH)=x64?>
+						<File Name='vltlctl.exe' Source='vltlctl\x64\vltlctl.exe'/>
+						<File Name='fdlvlctl.exe' Source='app\x64\fdlvlctl.exe'/>
+<?else?>
+						<File Name='vltlctl.exe' Source='vltlctl\vltlctl.exe'/>
+						<File Name='fdlvlctl.exe' Source='app\fdlvlctl.exe'/>
+<?endif?>
+						<File Source='app\fdlvlctl.exe.manifest'/>
+						<File Source='app\fdlvling.ico'/>
+						<RegistryValue Root='HKCR' Key='Drive\shell\fdlvling' Value='@&quot;[INSTALLDIR]fdlvlctl.exe&quot;,-4000' Type='string'/>
+						<RegistryValue Root='HKCR' Key='Drive\shell\fdlvling' Name='Icon' Value='[INSTALLDIR]fdlvling.ico' Type='string'/>
+						<RegistryValue Root='HKCR' Key='Drive\shell\fdlvling\command' Value='&quot;[INSTALLDIR]fdlvlctl.exe&quot; %1' Type='string'/>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+		<Feature Id='DefaultFeature' Level='1'>
+			<ComponentRef Id='DriverFiles'/>
+			<ComponentRef Id='ApplicationFiles'/>
+		</Feature>
+		<UIRef Id='WixUI_Minimal'/>
+		<UIRef Id='WixUI_ErrorProgressText'/>
+	</Product>
+</Wix>

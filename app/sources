@@ -1,0 +1,8 @@
+TARGETNAME=fdlvlctl
+SOURCES=fdlvlctl.cpp fdlvlctl.rc
+TARGETTYPE=PROGRAM
+MSC_WARNING_LEVEL=/W3 /WX
+UMTYPE=windows
+UMENTRY=winmain
+TARGETLIBS=$(DDK_LIB_PATH)\user32.lib $(DDK_LIB_PATH)\gdi32.lib $(DDK_LIB_PATH)\comctl32.lib
+USE_MSVCRT=1

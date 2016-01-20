@@ -1,0 +1,7 @@
+TARGETNAME=fdlvling
+SOURCES=fdlvling.rc recovery.c vrelocation.c vflush.c vscsi.c vgate.c vcheck.c vreq.c config.c vltl.c registry.c control.c names.c trace.c common.c
+INCLUDES=
+TARGETLIBS=$(DDK_LIB_PATH)\wdmsec.lib
+TARGETPATH=obj
+TARGETTYPE=DRIVER
+MSC_WARNING_LEVEL=/W3 /WX
